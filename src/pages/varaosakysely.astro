@@ -134,6 +134,15 @@ import { site } from '../data/site';
   const form = document.querySelector<HTMLFormElement>('[data-parts-form]');
   const status = form?.querySelector<HTMLElement>('[data-status]');
 
+  const params = new URLSearchParams(window.location.search);
+  const prefill = (id: string, key: string) => {
+    const value = params.get(key);
+    const input = form?.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${id}`);
+    if (value && input) input.value = value;
+  };
+  prefill('osa', 'osa');
+  prefill('merkki', 'merkki');
+
   const showStatus = (text: string, ok = true) => {
     if (!status) return;
     status.textContent = text;

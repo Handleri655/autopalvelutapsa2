@@ -5,12 +5,14 @@ import PageHero from '../components/PageHero.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { site } from '../data/site';
 import { vehicles } from '../data/vehicles';
+
+const seedVehicles = JSON.stringify(vehicles);
 ---
 
 <Base
   title="Purettavat autot"
   description="Purussa olevat ja purkuun tulevat ajoneuvot Nastolassa. Tiedustele osia puhelimitse, WhatsAppilla tai varaosakyselyllä."
-  image="/images/purkuauto.jpg"
+  image={vehicles[0]?.image ?? '/images/purkuauto.jpg'}
 >
   <PageHero
     eyebrow="Purettavat autot"
@@ -26,39 +28,116 @@ import { vehicles } from '../data/vehicles';
 
   <section class="section">
     <div class="container">
-      {
-        vehicles.length > 0 ? (
-          <div class="product-grid">
-            {vehicles.map((v) => (
+      <div class="section__head reveal" data-vehicles-head>
+        <p class="eyebrow">Varastossa nyt</p>
+        <h2 data-vehicles-count>{vehicles.length} autoa purussa</h2>
+        <p class="lead">
+          Lista päivittyy hallinnasta. Kysy osia – vastaamme yleensä saman päivän aikana.
+          <a href="/hallinta/">Hallitse listaa →</a>
+        </p>
+      </div>
+
+      <div class="product-grid" data-vehicles-grid>
+        {
+          vehicles.map((v) => {
+            const label = `${v.make} ${v.model}`;
+            const inquire = `/varaosakysely/?merkki=${encodeURIComponent(label)}&osa=${encodeURIComponent(`Osat autosta: ${label}${v.year ? ` (${v.year})` : ''}`)}`;
+            return (
               <article class="product reveal">
-                {v.image && <img src={v.image} alt={`${v.make} ${v.model}`} loading="lazy" style="border-radius:8px;margin-bottom:1rem;aspect-ratio:4/3;object-fit:cover" />}
+                {v.image && (
+                  <img
+                    src={v.image}
+                    alt={label}
+                    loading="lazy"
+                    width="640"
+                    height="480"
+                    style="border-radius:8px;margin-bottom:1rem;aspect-ratio:4/3;object-fit:cover;width:100%"
+                  />
+                )}
                 <span class="tag">{v.status}</span>
-                <h3>{v.make} {v.model}</h3>
+                <h3>{label}</h3>
                 <dl>
-                  {v.year && (<><dt>Vuosimalli</dt><dd>{v.year}</dd></>)}
-                  {v.engine && (<><dt>Moottori</dt><dd>{v.engine}</dd></>)}
-                  {v.gearbox && (<><dt>Vaihteisto</dt><dd>{v.gearbox}</dd></>)}
+                  {v.year && (
+                    <>
+                      <dt>Vuosimalli</dt>
+                      <dd>{v.year}</dd>
+                    </>
+                  )}
+                  {v.engine && (
+                    <>
+                      <dt>Moottori</dt>
+                      <dd>{v.engine}</dd>
+                    </>
+                  )}
+                  {v.gearbox && (
+                    <>
+                      <dt>Vaihteisto</dt>
+                      <dd>{v.gearbox}</dd>
+                    </>
+                  )}
+                  {v.fuel && (
+                    <>
+                      <dt>Polttoaine</dt>
+                      <dd>{v.fuel}</dd>
+                    </>
+                  )}
+                  {v.body && (
+                    <>
+                      <dt>Korityyppi</dt>
+                      <dd>{v.body}</dd>
+                    </>
+                  )}
+                  {v.color && (
+                    <>
+                      <dt>Väri</dt>
+                      <dd>{v.color}</dd>
+                    </>
+                  )}
                 </dl>
-                <a class="btn btn--primary" href="/varaosakysely/">Kysy osia</a>
+                {v.note && <p class="note" style="margin-top:0;margin-bottom:1rem">{v.note}</p>}
+                <a class="btn btn--primary" href={inquire}>
+                  <Icon name="doc" size={18} /> Kysy osia
+                </a>
               </article>
-            ))}
-          </div>
-        ) : (
-          <div class="empty-state reveal">
-            <h2>Lista päivittyy jatkuvasti</h2>
-            <p>
-              Purkuautot vaihtuvat nopeasti. Kerro mitä osaa etsit ja mihin autoon, niin tarkistamme tilanteen
-              varastosta ja purkuun tulevista autoista.
-            </p>
-            <div class="hero__actions" style="justify-content:center">
-              <a class="btn btn--primary" href="/varaosakysely/">Lähetä varaosakysely</a>
-              <a class="btn btn--outline" href={site.phone.href}><Icon name="phone" size={18} /> {site.phone.display}</a>
-            </div>
-          </div>
-        )
-      }
+            );
+          })
+        }
+      </div>
+
+      <div class="empty-state reveal" data-vehicles-empty hidden>
+        <h2>Ei autoja listalla juuri nyt</h2>
+        <p>
+          Purkuautot vaihtuvat nopeasti. Kerro mitä osaa etsit, niin tarkistamme tilanteen – tai lisää autoja
+          hallinnasta.
+        </p>
+        <div class="hero__actions" style="justify-content:center">
+          <a class="btn btn--primary" href="/varaosakysely/">Lähetä varaosakysely</a>
+          <a class="btn btn--outline" href="/hallinta/">Avaa hallinta</a>
+        </div>
+      </div>
     </div>
   </section>
 
   <CtaBand title="Onko sinulla auto purkuun?" text="Ostamme henkilö- ja pakettiautoja purkuun. Romutustodistus heti paikan päältä." />
 </Base>
+
+<script src="/js/inventory-store.js" is:inline></script>
+<script define:vars={{ seedVehicles }}>
+  const inv = window.TapsaInventory;
+  const seed = JSON.parse(seedVehicles);
+  const grid = document.querySelector('[data-vehicles-grid]');
+  const empty = document.querySelector('[data-vehicles-empty]');
+  const count = document.querySelector('[data-vehicles-count]');
+
+  const paint = (list) => {
+    if (grid) grid.innerHTML = list.map((v) => inv.vehicleCardHtml(v)).join('');
+    if (count) count.textContent = list.length === 1 ? '1 auto purussa' : `${list.length} autoa purussa`;
+    if (empty && grid) {
+      empty.hidden = list.length !== 0;
+      grid.hidden = list.length === 0;
+    }
+  };
+
+  paint(seed);
+  inv.fetchInventory([], seed).then((data) => paint(data.vehicles));
+</script>

@@ -3,3 +3,9 @@ dist/
 .astro/
 _old/
 .DS_Store
+.env
+.env.*
+!.env.example
+data/inventory.json
+public/uploads/
+.vercel

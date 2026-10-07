@@ -15,7 +15,13 @@ import { site } from '../data/site';
     title="Myynnissä olevat autot"
     lead="Tiloissamme toimii käytettyjen käyttö- ja hyötyajoneuvojen myyntipiste. Luotettavaa ja helppoa autokauppaa vuosikymmenten kokemuksella."
     image="/images/purkuauto.jpg"
-  />
+  >
+    <div class="hero__actions" style="margin-top:1.5rem">
+      <a class="btn btn--accent btn--lg" href={site.nettiauto} target="_blank" rel="noopener">
+        <Icon name="car" size={20} /> Katso vaihtoautot Nettiautosta
+      </a>
+    </div>
+  </PageHero>
 
   <section class="section">
     <div class="container split">
@@ -27,7 +33,12 @@ import { site } from '../data/site';
           <li><Icon name="check" size={20} /> Rahoitus myös osamaksulla – jopa ilman käsirahaa.</li>
           <li><Icon name="check" size={20} /> Käyttö- ja hyötyajoneuvot.</li>
         </ul>
-        <p>Tutustu valikoimaan paikan päällä tai kysy saatavilla olevista autoista:</p>
+        <p>Ajantasainen valikoima löytyy Nettiautosta. Voit myös tulla tutustumaan paikan päälle tai kysyä puhelimitse.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--lg" href={site.nettiauto} target="_blank" rel="noopener">
+            <Icon name="car" size={20} /> Vaihtoautot Nettiautossa
+          </a>
+        </div>
       </div>
       <div class="contact-card reveal">
         <h3>Automyynti</h3>
@@ -43,6 +54,10 @@ import { site } from '../data/site';
           <li>
             <span class="contact-list__icon"><Icon name="pin" /></span>
             <div><small>Osoite</small><a href={site.mapsLink} target="_blank" rel="noopener">{site.address.street}, {site.address.postalCode} {site.address.city}</a></div>
+          </li>
+          <li>
+            <span class="contact-list__icon"><Icon name="car" /></span>
+            <div><small>Vaihtoautot</small><a href={site.nettiauto} target="_blank" rel="noopener">Katso Nettiautosta</a></div>
           </li>
         </ul>
       </div>

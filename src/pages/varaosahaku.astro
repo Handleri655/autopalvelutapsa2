@@ -1,0 +1,263 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+import { parts, partCategories, partMakes } from '../data/parts';
+---
+
+<Base
+  title="Varaosahaku (demo)"
+  description="Kokeile varaosahakua – etsi moottoreita, peltiosia ja muita varaosia merkin, mallin ja osatyypin mukaan. Demo Autopalvelu Tapsan varastosta."
+  image="/images/vetoakselit.jpg"
+>
+  <PageHero
+    eyebrow="Varaosahaku · Demo"
+    title="Etsi osaa varastosta"
+    lead="Kokeile, miltä varaosahaku voisi näyttää asiakkaille. Tämä on demoesimerkki – listalla on otos tyypillisiä osia, ei koko varasto."
+    image="/images/vetoakselit.jpg"
+  />
+
+  <section class="section" style="padding-top:2.5rem">
+    <div class="container">
+      <div class="demo-banner reveal">
+        <div>
+          <span class="tag">Demo</span>
+          <h2 style="font-size:1.6rem;margin:0.4rem 0 0.35rem">Näin asiakas löytäisi osan itse</h2>
+          <p>
+            Hallitse osia <a href="/hallinta/">hallintasivulla</a> – muutokset tallentuvat palvelimelle
+            ja näkyvät tässä haussa kaikille kävijöille.
+          </p>
+        </div>
+        <div class="hero__actions">
+          <a class="btn btn--outline" href="/hallinta/">Avaa hallinta</a>
+          <a class="btn btn--outline" href="/varaosakysely/"><Icon name="doc" size={18} /> Varaosakysely</a>
+        </div>
+      </div>
+
+      <div class="search-layout">
+        <aside class="search-panel contact-card reveal" data-search-panel>
+          <form class="form" data-parts-search>
+            <fieldset>
+              <legend>Hae osaa</legend>
+              <div class="field">
+                <label for="q">Vapaa haku</label>
+                <input id="q" name="q" type="search" placeholder="esim. moottori, ovi, BLS…" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="make">Merkki</label>
+                <select id="make" name="make">
+                  <option value="">Kaikki merkit</option>
+                  {partMakes.map((m) => <option value={m}>{m}</option>)}
+                </select>
+              </div>
+              <div class="field">
+                <label for="category">Osan tyyppi</label>
+                <select id="category" name="category">
+                  <option value="">Kaikki tyypit</option>
+                  {partCategories.map((c) => <option value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div class="field">
+                <label for="year">Vuosimalli</label>
+                <input id="year" name="year" inputmode="numeric" placeholder="esim. 2010" maxlength="4" />
+                <span class="field__hint">Näyttää osat, jotka sopivat vuodelle</span>
+              </div>
+            </fieldset>
+            <div class="search-panel__actions">
+              <button class="btn btn--primary" type="submit"><Icon name="search" size={18} /> Hae</button>
+              <button class="btn btn--outline" type="reset">Tyhjennä</button>
+            </div>
+          </form>
+        </aside>
+
+        <div class="search-results">
+          <div class="search-meta reveal">
+            <p data-results-label>
+              Näytetään <strong>{parts.length}</strong> osaa
+            </p>
+            <p class="note">Hinnat ovat esimerkkejä · Kysy aina saatavuus</p>
+          </div>
+
+          <div class="product-grid" data-results>
+            {
+              parts.map((part) => (
+                <article
+                  class="product part-card"
+                  data-part
+                  data-id={part.id}
+                  data-make={part.make}
+                  data-model={part.model}
+                  data-category={part.category}
+                  data-title={part.title}
+                  data-engine={part.engine ?? ''}
+                  data-code={part.code ?? ''}
+                  data-note={part.note ?? ''}
+                  data-year-from={part.yearFrom ?? ''}
+                  data-year-to={part.yearTo ?? ''}
+                >
+                  <div class="part-card__top">
+                    <span class="tag">{part.category}</span>
+                    {part.warranty && <span class="tag tag--navy">Takuu</span>}
+                    {part.condition === 'Uusi' && <span class="tag tag--accent">Uusi</span>}
+                  </div>
+                  <h3>{part.title}</h3>
+                  <p class="part-card__vehicle">
+                    {part.make} {part.model}
+                    {(part.yearFrom || part.yearTo) && (
+                      <span>
+                        {' '}
+                        · {part.yearFrom ?? '?'}–{part.yearTo ?? '?'}
+                      </span>
+                    )}
+                  </p>
+                  <dl>
+                    <dt>Tuotenro</dt>
+                    <dd>{part.id}</dd>
+                    {part.engine && (
+                      <>
+                        <dt>Moottori</dt>
+                        <dd>{part.engine}</dd>
+                      </>
+                    )}
+                    {part.code && (
+                      <>
+                        <dt>Koodi</dt>
+                        <dd>{part.code}</dd>
+                      </>
+                    )}
+                    {part.note && (
+                      <>
+                        <dt>Huom</dt>
+                        <dd>{part.note}</dd>
+                      </>
+                    )}
+                  </dl>
+                  <div class="price">
+                    {part.price != null ? <strong>{part.price} €</strong> : <strong>Kysy hinta</strong>}
+                  </div>
+                  <a
+                    class="btn btn--primary"
+                    href={`/varaosakysely/?osa=${encodeURIComponent(`${part.title} – ${part.make} ${part.model}${part.code ? ` (${part.code})` : ''}`)}&merkki=${encodeURIComponent(`${part.make} ${part.model}`)}`}
+                  >
+                    <Icon name="doc" size={18} /> Kysy tätä osaa
+                  </a>
+                </article>
+              ))
+            }
+          </div>
+
+          <div class="empty-state" data-empty hidden>
+            <h2>Ei tuloksia tällä haulla</h2>
+            <p>
+              Kokeile toista merkkiä tai osatyyppiä – tai lähetä varaosakysely, niin tarkistamme koko varaston.
+            </p>
+            <div class="hero__actions" style="justify-content:center">
+              <a class="btn btn--primary" href="/varaosakysely/">Lähetä varaosakysely</a>
+              <a class="btn btn--outline" href={site.phone.href}><Icon name="phone" size={18} /> {site.phone.display}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script src="/js/inventory-store.js" is:inline></script>
+<script define:vars={{ seedParts: JSON.stringify(parts) }}>
+  const inv = window.TapsaInventory;
+  const seed = JSON.parse(seedParts);
+  const form = document.querySelector('[data-parts-search]');
+  const label = document.querySelector('[data-results-label]');
+  const empty = document.querySelector('[data-empty]');
+  const grid = document.querySelector('[data-results]');
+  const makeSelect = document.querySelector('#make');
+  let partsState = seed;
+
+  const normalize = (value) =>
+    String(value ?? '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+  const refreshMakeOptions = () => {
+    if (!makeSelect) return;
+    const current = makeSelect.value;
+    const makes = [...new Set(partsState.map((p) => p.make))].sort((a, b) => a.localeCompare(b, 'fi'));
+    makeSelect.innerHTML =
+      '<option value="">Kaikki merkit</option>' +
+      makes.map((m) => `<option value="${inv.escapeHtml(m)}">${inv.escapeHtml(m)}</option>`).join('');
+    if (makes.includes(current)) makeSelect.value = current;
+  };
+
+  const render = () => {
+    if (!grid) return;
+    grid.innerHTML = partsState.map((p) => inv.partCardHtml(p)).join('');
+    refreshMakeOptions();
+    applyFilters();
+  };
+
+  const applyFilters = () => {
+    if (!form || !grid) return;
+    const cards = [...grid.querySelectorAll('[data-part]')];
+    const data = new FormData(form);
+    const q = normalize(data.get('q'));
+    const make = String(data.get('make') ?? '');
+    const category = String(data.get('category') ?? '');
+    const yearRaw = String(data.get('year') ?? '').trim();
+    const year = yearRaw ? Number(yearRaw) : null;
+
+    let visible = 0;
+    cards.forEach((card) => {
+      const haystack = normalize(
+        [
+          card.dataset.title,
+          card.dataset.make,
+          card.dataset.model,
+          card.dataset.category,
+          card.dataset.engine,
+          card.dataset.code,
+          card.dataset.note,
+          card.dataset.id,
+        ].join(' '),
+      );
+      const from = card.dataset.yearFrom ? Number(card.dataset.yearFrom) : null;
+      const to = card.dataset.yearTo ? Number(card.dataset.yearTo) : null;
+      const show =
+        (!q || haystack.includes(q)) &&
+        (!make || card.dataset.make === make) &&
+        (!category || card.dataset.category === category) &&
+        (!year ||
+          Number.isNaN(year) ||
+          ((from == null || year >= from) && (to == null || year <= to)));
+      card.hidden = !show;
+      if (show) visible += 1;
+    });
+
+    if (label) {
+      label.innerHTML =
+        visible === cards.length
+          ? `Näytetään <strong>${visible}</strong> osaa`
+          : `Löytyi <strong>${visible}</strong> / ${cards.length} osaa`;
+    }
+    if (empty && grid) {
+      empty.hidden = visible !== 0;
+      grid.hidden = visible === 0;
+    }
+  };
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    applyFilters();
+  });
+  form?.addEventListener('reset', () => requestAnimationFrame(applyFilters));
+  form?.querySelectorAll('select, input').forEach((el) => {
+    el.addEventListener('input', applyFilters);
+    el.addEventListener('change', applyFilters);
+  });
+
+  inv.fetchInventory(seed, []).then((data) => {
+    partsState = data.parts;
+    render();
+  });
+</script>

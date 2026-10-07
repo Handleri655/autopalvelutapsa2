@@ -26,8 +26,11 @@ export const site = {
   email: 'info@autopalvelutapsa.fi',
   salesEmail: 'automyynti@autopalvelutapsa.fi',
   facebook: 'https://www.facebook.com/61585190460998',
+  nettiauto: 'https://www.nettiauto.com/yritys/3315771',
   // Lomakepalvelun (esim. Formspree) osoite. Tyhjänä lomake avaa sähköpostiohjelman.
   formEndpoint: '',
+  // Hallintasivun PIN (demo – ei oikeaa tietoturvaa ilman palvelinta).
+  adminPin: 'tapsa1981',
   hours: [
     { days: 'Ma–Pe', time: '10.00–17.00' },
     { days: 'La–Su', time: 'Suljettu' },
@@ -39,6 +42,7 @@ export const site = {
 export const nav = [
   { href: '/', label: 'Etusivu' },
   { href: '/palvelut/', label: 'Palvelut' },
+  { href: '/varaosahaku/', label: 'Varaosahaku' },
   { href: '/purettavat-ajoneuvot/', label: 'Purettavat autot' },
   { href: '/outlet/', label: 'Outlet' },
   { href: '/myyntiautot/', label: 'Myyntiautot' },

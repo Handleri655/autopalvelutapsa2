@@ -1,0 +1,690 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+import { parts, partCategories } from '../data/parts';
+import { vehicles, vehicleStatuses } from '../data/vehicles';
+
+const seedParts = JSON.stringify(parts);
+const seedVehicles = JSON.stringify(vehicles);
+const showPinHint = import.meta.env.DEV;
+---
+
+<Base
+  title="Hallinta"
+  description="Hallitse purettavia autoja ja varaosia. Muutokset näkyvät sivustolla heti."
+  noindex
+>
+
+  <PageHero
+    eyebrow="Hallinta"
+    title="Varaston hallinta"
+    lead="Lisää, muokkaa ja poista purettavia autoja sekä varaosia. Muutokset tallentuvat palvelimelle ja näkyvät heti sivustolla."
+  />
+
+  <section class="section" style="padding-top:2.5rem">
+    <div class="container">
+      <div class="demo-banner">
+        <div>
+          <span class="tag">Vercel-valmis</span>
+          <h2 style="font-size:1.6rem;margin:0.4rem 0 0.35rem">Yhteinen varasto palvelimella</h2>
+          <p>
+            Paikallisesti tiedot tallentuvat tiedostoon. Vercelissä käytetään Vercel Blobia
+            (<code>BLOB_READ_WRITE_TOKEN</code>). Tallennustila: <strong data-storage-label>–</strong>
+          </p>
+        </div>
+        <div class="hero__actions">
+          <a class="btn btn--outline" href="/varaosahaku/">Avaa varaosahaku</a>
+          <a class="btn btn--outline" href="/purettavat-ajoneuvot/">Avaa purettavat</a>
+        </div>
+      </div>
+
+      <p class="form__status" data-save-status hidden></p>
+
+      <div class="admin-login contact-card" data-admin-login>
+        <h2 style="font-size:2rem">Kirjaudu hallintaan</h2>
+        {showPinHint ? (
+          <p class="note">
+            Kehitys-PIN: <code>{site.adminPin}</code> (tuotannossa aseta <code>ADMIN_PIN</code>)
+          </p>
+        ) : (
+          <p class="note">Kirjaudu PIN-koodilla. PIN asetetaan Vercelissä muuttujalla <code>ADMIN_PIN</code>.</p>
+        )}
+        <form class="form" data-login-form>
+          <div class="field">
+            <label for="pin">PIN-koodi</label>
+            <input id="pin" name="pin" type="password" autocomplete="current-password" required />
+          </div>
+          <p class="form__status" data-login-error hidden style="background:#fdecea;color:#a12a1e">Väärä PIN.</p>
+          <button class="btn btn--accent btn--lg" type="submit"><Icon name="shield" size={20} /> Kirjaudu</button>
+        </form>
+      </div>
+
+      <div class="admin-app" data-admin-app hidden>
+        <div class="admin-toolbar">
+          <div class="admin-tabs" role="tablist">
+            <button class="admin-tab is-active" type="button" data-tab="vehicles" role="tab" aria-selected="true">
+              Purettavat autot <span class="admin-count" data-count-vehicles>0</span>
+            </button>
+            <button class="admin-tab" type="button" data-tab="parts" role="tab" aria-selected="false">
+              Varaosat <span class="admin-count" data-count-parts>0</span>
+            </button>
+          </div>
+          <button class="btn btn--outline" type="button" data-logout>Kirjaudu ulos</button>
+        </div>
+
+        <!-- Vehicles panel -->
+        <div class="admin-panel" data-panel="vehicles">
+          <div class="admin-grid">
+            <div class="contact-card">
+              <form class="form" data-vehicle-form>
+                <input type="hidden" name="id" />
+                <fieldset>
+                  <legend data-vehicle-form-title>Lisää purettava auto</legend>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="v-make">Merkki <span>*</span></label>
+                      <input id="v-make" name="make" required placeholder="esim. Volkswagen" />
+                    </div>
+                    <div class="field">
+                      <label for="v-model">Malli <span>*</span></label>
+                      <input id="v-model" name="model" required placeholder="esim. Passat 2.0 TDI" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="v-year">Vuosimalli</label>
+                      <input id="v-year" name="year" inputmode="numeric" placeholder="2009" />
+                    </div>
+                    <div class="field">
+                      <label for="v-status">Tila</label>
+                      <select id="v-status" name="status">
+                        {vehicleStatuses.map((s) => <option value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="v-engine">Moottori</label>
+                      <input id="v-engine" name="engine" placeholder="2.0 TDI" />
+                    </div>
+                    <div class="field">
+                      <label for="v-gearbox">Vaihteisto</label>
+                      <input id="v-gearbox" name="gearbox" placeholder="Manuaali / Automaatti" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="v-fuel">Polttoaine</label>
+                      <input id="v-fuel" name="fuel" placeholder="Diesel" />
+                    </div>
+                    <div class="field">
+                      <label for="v-body">Korityyppi</label>
+                      <input id="v-body" name="body" placeholder="Farmari" />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="v-color">Väri</label>
+                    <input id="v-color" name="color" placeholder="Musta" />
+                  </div>
+                  <div class="field">
+                    <label for="v-image">Kuva</label>
+                    <input id="v-image" name="image" type="text" placeholder="https://… tai /uploads/…" />
+                    <div class="admin-upload">
+                      <input id="v-image-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-vehicle-file />
+                      <button class="btn btn--outline" type="button" data-vehicle-upload>Lataa kuva</button>
+                    </div>
+                    <img class="admin-upload__preview" data-vehicle-preview alt="" hidden />
+                    <span class="field__hint">Lataa kuva tai liitä osoite. Max 6 Mt.</span>
+                  </div>
+                  <div class="field">
+                    <label for="v-note">Huomiot</label>
+                    <textarea id="v-note" name="note" rows="2" placeholder="Lisätietoja…"></textarea>
+                  </div>
+                </fieldset>
+                <div class="search-panel__actions">
+                  <button class="btn btn--primary" type="submit">Tallenna auto</button>
+                  <button class="btn btn--outline" type="button" data-vehicle-cancel hidden>Peruuta</button>
+                </div>
+              </form>
+            </div>
+
+            <div>
+              <div class="admin-list-head">
+                <h3>Listalla olevat autot</h3>
+                <div class="hero__actions">
+                  <button class="btn btn--outline" type="button" data-reset-vehicles>Palauta esimerkit</button>
+                  <button class="btn btn--outline" type="button" data-export-vehicles>Vie JSON</button>
+                </div>
+              </div>
+              <div class="admin-table-wrap">
+                <table class="admin-table" data-vehicles-table>
+                  <thead>
+                    <tr>
+                      <th>Auto</th>
+                      <th>Vuosi</th>
+                      <th>Tila</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parts panel -->
+        <div class="admin-panel" data-panel="parts" hidden>
+          <div class="admin-grid">
+            <div class="contact-card">
+              <form class="form" data-part-form>
+                <input type="hidden" name="id" />
+                <fieldset>
+                  <legend data-part-form-title>Lisää varaosa</legend>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="p-title">Osa <span>*</span></label>
+                      <input id="p-title" name="title" required placeholder="esim. Moottori 1.9 TDI" />
+                    </div>
+                    <div class="field">
+                      <label for="p-category">Tyyppi <span>*</span></label>
+                      <select id="p-category" name="category" required>
+                        {partCategories.map((c) => <option value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="p-make">Merkki <span>*</span></label>
+                      <input id="p-make" name="make" required placeholder="Volkswagen" />
+                    </div>
+                    <div class="field">
+                      <label for="p-model">Malli <span>*</span></label>
+                      <input id="p-model" name="model" required placeholder="Passat" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="p-yearFrom">Vuosi alkaen</label>
+                      <input id="p-yearFrom" name="yearFrom" inputmode="numeric" placeholder="2006" />
+                    </div>
+                    <div class="field">
+                      <label for="p-yearTo">Vuosi asti</label>
+                      <input id="p-yearTo" name="yearTo" inputmode="numeric" placeholder="2010" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="p-engine">Moottori</label>
+                      <input id="p-engine" name="engine" placeholder="1.9 TDI" />
+                    </div>
+                    <div class="field">
+                      <label for="p-code">Koodi</label>
+                      <input id="p-code" name="code" placeholder="BLS" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="p-price">Hinta (€)</label>
+                      <input id="p-price" name="price" inputmode="decimal" placeholder="650" />
+                    </div>
+                    <div class="field">
+                      <label for="p-condition">Kunto</label>
+                      <select id="p-condition" name="condition">
+                        <option value="Käytetty">Käytetty</option>
+                        <option value="Uusi">Uusi</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="p-note">Huomiot</label>
+                    <textarea id="p-note" name="note" rows="2"></textarea>
+                  </div>
+                  <label class="admin-check">
+                    <input type="checkbox" name="warranty" />
+                    Toimintatakuu
+                  </label>
+                </fieldset>
+                <div class="search-panel__actions">
+                  <button class="btn btn--primary" type="submit">Tallenna osa</button>
+                  <button class="btn btn--outline" type="button" data-part-cancel hidden>Peruuta</button>
+                </div>
+              </form>
+            </div>
+
+            <div>
+              <div class="admin-list-head">
+                <h3>Listalla olevat varaosat</h3>
+                <div class="hero__actions">
+                  <button class="btn btn--outline" type="button" data-reset-parts>Palauta esimerkit</button>
+                  <button class="btn btn--outline" type="button" data-export-parts>Vie JSON</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:1rem">
+                <label for="parts-filter" class="sr-only">Suodata listaa</label>
+                <input id="parts-filter" type="search" data-parts-filter placeholder="Suodata: merkki, osa, koodi…" />
+              </div>
+              <div class="admin-table-wrap">
+                <table class="admin-table" data-parts-table>
+                  <thead>
+                    <tr>
+                      <th>Osa</th>
+                      <th>Auto</th>
+                      <th>Hinta</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script src="/js/inventory-store.js" is:inline></script>
+<script define:vars={{ seedParts, seedVehicles }}>
+  const inv = window.TapsaInventory;
+  const seedP = JSON.parse(seedParts);
+  const seedV = JSON.parse(seedVehicles);
+
+  const loginBox = document.querySelector('[data-admin-login]');
+  const app = document.querySelector('[data-admin-app]');
+  const loginForm = document.querySelector('[data-login-form]');
+  const loginError = document.querySelector('[data-login-error]');
+  const saveStatus = document.querySelector('[data-save-status]');
+  const storageLabel = document.querySelector('[data-storage-label]');
+
+  let partsState = structuredClone(seedP);
+  let vehiclesState = structuredClone(seedV);
+  let editingVehicleId = null;
+  let editingPartId = null;
+  let saving = false;
+
+  const setStatus = (text, ok = true) => {
+    if (!saveStatus) return;
+    saveStatus.hidden = !text;
+    saveStatus.textContent = text || '';
+    saveStatus.style.background = ok ? '' : '#fdecea';
+    saveStatus.style.color = ok ? '' : '#a12a1e';
+  };
+
+  const setStorageLabel = (mode) => {
+    if (!storageLabel) return;
+    storageLabel.textContent = mode === 'blob' ? 'Vercel Blob' : mode === 'file' ? 'Paikallinen tiedosto' : mode || '–';
+  };
+
+  const persist = async () => {
+    if (saving) return;
+    saving = true;
+    setStatus('Tallennetaan…');
+    try {
+      const saved = await inv.saveInventory(partsState, vehiclesState);
+      partsState = saved.parts;
+      vehiclesState = saved.vehicles;
+      setStorageLabel(saved.storage);
+      setStatus('Tallennettu palvelimelle.');
+      renderVehicles();
+      renderParts();
+    } catch (error) {
+      setStatus(error?.message || 'Tallennus epäonnistui.', false);
+    } finally {
+      saving = false;
+    }
+  };
+
+  const loadData = async () => {
+    const data = await inv.fetchInventory(seedP, seedV);
+    partsState = data.parts;
+    vehiclesState = data.vehicles;
+    setStorageLabel(data.storage);
+    renderVehicles();
+    renderParts();
+  };
+
+  const showApp = async (authed) => {
+    loginBox.hidden = authed;
+    app.hidden = !authed;
+    if (authed) await loadData();
+  };
+
+  showApp(inv.isAuthed());
+
+  loginForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pin = new FormData(loginForm).get('pin');
+    try {
+      await inv.login(pin);
+      loginError.hidden = true;
+      await showApp(true);
+    } catch {
+      loginError.hidden = false;
+    }
+  });
+
+  document.querySelector('[data-logout]')?.addEventListener('click', () => {
+    inv.logout();
+    showApp(false);
+  });
+
+  document.querySelectorAll('[data-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('[data-tab]').forEach((b) => {
+        b.classList.toggle('is-active', b === btn);
+        b.setAttribute('aria-selected', String(b === btn));
+      });
+      document.querySelectorAll('[data-panel]').forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== tab;
+      });
+    });
+  });
+
+  const downloadJson = (filename, data) => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const vehicleForm = document.querySelector('[data-vehicle-form]');
+  const vehicleCancel = document.querySelector('[data-vehicle-cancel]');
+  const vehicleFormTitle = document.querySelector('[data-vehicle-form-title]');
+  const vehiclesBody = document.querySelector('[data-vehicles-table] tbody');
+  const vehicleFile = document.querySelector('[data-vehicle-file]');
+  const vehicleUploadBtn = document.querySelector('[data-vehicle-upload]');
+  const vehiclePreview = document.querySelector('[data-vehicle-preview]');
+  const vehicleImageInput = vehicleForm?.querySelector('[name="image"]');
+
+  const setVehiclePreview = (url) => {
+    if (!vehiclePreview) return;
+    if (url) {
+      vehiclePreview.src = url;
+      vehiclePreview.hidden = false;
+    } else {
+      vehiclePreview.removeAttribute('src');
+      vehiclePreview.hidden = true;
+    }
+  };
+
+  vehicleImageInput?.addEventListener('input', () => {
+    setVehiclePreview(String(vehicleImageInput.value || '').trim());
+  });
+
+  vehicleUploadBtn?.addEventListener('click', async () => {
+    const file = vehicleFile?.files?.[0];
+    if (!file) {
+      setStatus('Valitse ensin kuvatiedosto.', false);
+      return;
+    }
+    const pin = sessionStorage.getItem('tapsa_admin_pin_v1') || '';
+    const body = new FormData();
+    body.append('file', file);
+    vehicleUploadBtn.disabled = true;
+    setStatus('Ladataan kuvaa…');
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-admin-pin': pin },
+        body,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lataus epäonnistui');
+      if (vehicleImageInput) vehicleImageInput.value = data.url;
+      setVehiclePreview(data.url);
+      setStatus('Kuva ladattu. Tallenna auto, jotta muutos jää voimaan.');
+      if (vehicleFile) vehicleFile.value = '';
+    } catch (error) {
+      setStatus(error?.message || 'Kuvan lataus epäonnistui.', false);
+    } finally {
+      vehicleUploadBtn.disabled = false;
+    }
+  });
+
+  const resetVehicleForm = () => {
+    editingVehicleId = null;
+    vehicleForm.reset();
+    vehicleForm.querySelector('[name="id"]').value = '';
+    vehicleFormTitle.textContent = 'Lisää purettava auto';
+    vehicleCancel.hidden = true;
+    if (vehicleFile) vehicleFile.value = '';
+    setVehiclePreview('');
+  };
+
+  const renderVehicles = () => {
+    document.querySelector('[data-count-vehicles]').textContent = String(vehiclesState.length);
+    vehiclesBody.innerHTML = vehiclesState
+      .map(
+        (v) => `
+      <tr>
+        <td>
+          <strong>${inv.escapeHtml(v.make)} ${inv.escapeHtml(v.model)}</strong>
+          <div class="note">${inv.escapeHtml(v.engine || '–')} · ${inv.escapeHtml(v.color || '–')}</div>
+        </td>
+        <td>${inv.escapeHtml(v.year || '–')}</td>
+        <td><span class="tag">${inv.escapeHtml(v.status)}</span></td>
+        <td class="admin-actions">
+          <button type="button" class="btn btn--outline" data-edit-vehicle="${inv.escapeHtml(v.id)}">Muokkaa</button>
+          <button type="button" class="btn btn--danger" data-delete-vehicle="${inv.escapeHtml(v.id)}">Poista</button>
+        </td>
+      </tr>`,
+      )
+      .join('');
+  };
+
+  vehicleForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(vehicleForm);
+    const item = {
+      id: editingVehicleId || String(fd.get('id') || inv.newVehicleId()),
+      make: String(fd.get('make') || '').trim(),
+      model: String(fd.get('model') || '').trim(),
+      year: String(fd.get('year') || '').trim() || undefined,
+      engine: String(fd.get('engine') || '').trim() || undefined,
+      gearbox: String(fd.get('gearbox') || '').trim() || undefined,
+      fuel: String(fd.get('fuel') || '').trim() || undefined,
+      body: String(fd.get('body') || '').trim() || undefined,
+      color: String(fd.get('color') || '').trim() || undefined,
+      status: String(fd.get('status') || 'Purussa'),
+      image: String(fd.get('image') || '').trim() || undefined,
+      note: String(fd.get('note') || '').trim() || undefined,
+    };
+
+    if (editingVehicleId) {
+      vehiclesState = vehiclesState.map((v) => (v.id === editingVehicleId ? item : v));
+    } else {
+      vehiclesState = [item, ...vehiclesState];
+    }
+    resetVehicleForm();
+    renderVehicles();
+    await persist();
+  });
+
+  vehicleCancel?.addEventListener('click', resetVehicleForm);
+
+  vehiclesBody?.addEventListener('click', async (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    const editId = t.dataset.editVehicle;
+    const deleteId = t.dataset.deleteVehicle;
+    if (editId) {
+      const v = vehiclesState.find((x) => x.id === editId);
+      if (!v) return;
+      editingVehicleId = v.id;
+      vehicleFormTitle.textContent = 'Muokkaa autoa';
+      vehicleCancel.hidden = false;
+      vehicleForm.querySelector('[name="id"]').value = v.id;
+      vehicleForm.querySelector('[name="make"]').value = v.make || '';
+      vehicleForm.querySelector('[name="model"]').value = v.model || '';
+      vehicleForm.querySelector('[name="year"]').value = v.year || '';
+      vehicleForm.querySelector('[name="status"]').value = v.status || 'Purussa';
+      vehicleForm.querySelector('[name="engine"]').value = v.engine || '';
+      vehicleForm.querySelector('[name="gearbox"]').value = v.gearbox || '';
+      vehicleForm.querySelector('[name="fuel"]').value = v.fuel || '';
+      vehicleForm.querySelector('[name="body"]').value = v.body || '';
+      vehicleForm.querySelector('[name="color"]').value = v.color || '';
+      vehicleForm.querySelector('[name="image"]').value = v.image || '';
+      vehicleForm.querySelector('[name="note"]').value = v.note || '';
+      setVehiclePreview(v.image || '');
+      vehicleForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (deleteId) {
+      if (!confirm('Poistetaanko tämä auto listalta?')) return;
+      vehiclesState = vehiclesState.filter((v) => v.id !== deleteId);
+      if (editingVehicleId === deleteId) resetVehicleForm();
+      renderVehicles();
+      await persist();
+    }
+  });
+
+  document.querySelector('[data-reset-vehicles]')?.addEventListener('click', async () => {
+    if (!confirm('Palautetaanko purettavien autojen esimerkkilista?')) return;
+    vehiclesState = structuredClone(seedV);
+    resetVehicleForm();
+    renderVehicles();
+    await persist();
+  });
+
+  document.querySelector('[data-export-vehicles]')?.addEventListener('click', () => {
+    downloadJson('purettavat-autot.json', vehiclesState);
+  });
+
+  const partForm = document.querySelector('[data-part-form]');
+  const partCancel = document.querySelector('[data-part-cancel]');
+  const partFormTitle = document.querySelector('[data-part-form-title]');
+  const partsBody = document.querySelector('[data-parts-table] tbody');
+  const partsFilter = document.querySelector('[data-parts-filter]');
+
+  const resetPartForm = () => {
+    editingPartId = null;
+    partForm.reset();
+    partForm.querySelector('[name="id"]').value = '';
+    partFormTitle.textContent = 'Lisää varaosa';
+    partCancel.hidden = true;
+  };
+
+  const renderParts = () => {
+    document.querySelector('[data-count-parts]').textContent = String(partsState.length);
+    const q = String(partsFilter?.value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+    const rows = partsState.filter((p) => {
+      if (!q) return true;
+      const hay = [p.id, p.title, p.make, p.model, p.category, p.engine, p.code, p.note]
+        .join(' ')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      return hay.includes(q);
+    });
+
+    partsBody.innerHTML = rows
+      .map(
+        (p) => `
+      <tr>
+        <td>
+          <strong>${inv.escapeHtml(p.title)}</strong>
+          <div class="note">${inv.escapeHtml(p.category)} · ${inv.escapeHtml(p.id)}</div>
+        </td>
+        <td>${inv.escapeHtml(p.make)} ${inv.escapeHtml(p.model)}</td>
+        <td>${p.price != null ? `${inv.escapeHtml(p.price)} €` : '–'}</td>
+        <td class="admin-actions">
+          <button type="button" class="btn btn--outline" data-edit-part="${inv.escapeHtml(p.id)}">Muokkaa</button>
+          <button type="button" class="btn btn--danger" data-delete-part="${inv.escapeHtml(p.id)}">Poista</button>
+        </td>
+      </tr>`,
+      )
+      .join('');
+  };
+
+  partForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(partForm);
+    const yearFrom = String(fd.get('yearFrom') || '').trim();
+    const yearTo = String(fd.get('yearTo') || '').trim();
+    const price = String(fd.get('price') || '').trim();
+    const item = {
+      id: editingPartId || String(fd.get('id') || inv.newPartId()),
+      title: String(fd.get('title') || '').trim(),
+      category: String(fd.get('category') || '').trim(),
+      make: String(fd.get('make') || '').trim(),
+      model: String(fd.get('model') || '').trim(),
+      yearFrom: yearFrom ? Number(yearFrom) : undefined,
+      yearTo: yearTo ? Number(yearTo) : undefined,
+      engine: String(fd.get('engine') || '').trim() || undefined,
+      code: String(fd.get('code') || '').trim() || undefined,
+      price: price ? Number(price) : undefined,
+      condition: String(fd.get('condition') || 'Käytetty'),
+      warranty: fd.get('warranty') === 'on',
+      note: String(fd.get('note') || '').trim() || undefined,
+    };
+
+    if (editingPartId) {
+      partsState = partsState.map((p) => (p.id === editingPartId ? item : p));
+    } else {
+      partsState = [item, ...partsState];
+    }
+    resetPartForm();
+    renderParts();
+    await persist();
+  });
+
+  partCancel?.addEventListener('click', resetPartForm);
+  partsFilter?.addEventListener('input', renderParts);
+
+  partsBody?.addEventListener('click', async (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    const editId = t.dataset.editPart;
+    const deleteId = t.dataset.deletePart;
+    if (editId) {
+      const p = partsState.find((x) => x.id === editId);
+      if (!p) return;
+      editingPartId = p.id;
+      partFormTitle.textContent = 'Muokkaa varaosaa';
+      partCancel.hidden = false;
+      partForm.querySelector('[name="id"]').value = p.id;
+      partForm.querySelector('[name="title"]').value = p.title || '';
+      partForm.querySelector('[name="category"]').value = p.category || '';
+      partForm.querySelector('[name="make"]').value = p.make || '';
+      partForm.querySelector('[name="model"]').value = p.model || '';
+      partForm.querySelector('[name="yearFrom"]').value = p.yearFrom ?? '';
+      partForm.querySelector('[name="yearTo"]').value = p.yearTo ?? '';
+      partForm.querySelector('[name="engine"]').value = p.engine || '';
+      partForm.querySelector('[name="code"]').value = p.code || '';
+      partForm.querySelector('[name="price"]').value = p.price ?? '';
+      partForm.querySelector('[name="condition"]').value = p.condition || 'Käytetty';
+      partForm.querySelector('[name="note"]').value = p.note || '';
+      partForm.querySelector('[name="warranty"]').checked = Boolean(p.warranty);
+      partForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (deleteId) {
+      if (!confirm('Poistetaanko tämä varaosa?')) return;
+      partsState = partsState.filter((p) => p.id !== deleteId);
+      if (editingPartId === deleteId) resetPartForm();
+      renderParts();
+      await persist();
+    }
+  });
+
+  document.querySelector('[data-reset-parts]')?.addEventListener('click', async () => {
+    if (!confirm('Palautetaanko varaosien esimerkkilista?')) return;
+    partsState = structuredClone(seedP);
+    resetPartForm();
+    renderParts();
+    await persist();
+  });
+
+  document.querySelector('[data-export-parts]')?.addEventListener('click', () => {
+    downloadJson('varaosat.json', partsState);
+  });
+</script>
