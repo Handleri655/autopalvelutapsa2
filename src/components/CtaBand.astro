@@ -1,0 +1,28 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+type Props = { title?: string; text?: string };
+
+const {
+  title = 'Etsitkö tiettyä osaa?',
+  text = 'Varastossamme on kymmeniätuhansia osia. Kysymällä se selviää – vastaamme yleensä saman päivän aikana.',
+} = Astro.props;
+---
+
+<section class="cta-band">
+  <div class="container cta-band__inner reveal">
+    <div>
+      <h2>{title}</h2>
+      <p>{text}</p>
+    </div>
+    <div class="cta-band__actions">
+      <a class="btn btn--accent btn--lg" href="/varaosakysely/">
+        <Icon name="doc" size={20} /> Lähetä varaosakysely
+      </a>
+      <a class="btn btn--ghost btn--lg" href={site.phone.href}>
+        <Icon name="phone" size={20} /> {site.phone.display}
+      </a>
+    </div>
+  </div>
+</section>

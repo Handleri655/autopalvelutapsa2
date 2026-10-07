@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const parts = [
+  { icon: 'engine', title: 'Moottorit', text: 'Bensa- ja dieselmoottorit toimintatakuulla.' },
+  { icon: 'gear', title: 'Vaihdelaatikot', text: 'Vaihdelaatikot ja vaihteistot toimintatakuulla.' },
+  { icon: 'car', title: 'Pelti- ja muoviosat', text: 'Ovet, konepellit, lokasuojat, puskurit ja takaluukut.' },
+  { icon: 'light', title: 'Valot ja peilit', text: 'Ajovalot, takavalot, vilkut, sumuvalot ja sivupeilit.' },
+  { icon: 'sparkle', title: 'Sähköosat', text: 'Laturit, startit, ohjainlaitteet ja lämmityslaitteiden moottorit.' },
+  { icon: 'wrench', title: 'Alusta ja jarrut', text: 'Vetoakselit, iskunvaimentimet, tukivarret, jarrusatulat ja muut.' },
+] as const;
+---
+
+<Base
+  title="Palvelut"
+  description="Purkuosat, uudet varaosat, Autover-tuulilasit, huollot ja romutustodistukset Nastolassa. Ostamme myös henkilö- ja pakettiautoja purkuun."
+>
+  <PageHero
+    eyebrow="Palvelut"
+    title="Varaosat, huollot ja autojen purku"
+    lead="Kaikki tarvitsemasi autosi korjaamiseen – kokeneelta perheyritykseltä Nastolasta."
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Purkuosat</p>
+        <h2>Laaja valikoima purkuautojen osia</h2>
+        <p class="lead">
+          Puramme henkilö- ja pakettiautoja huolellisesti ympäristöluvallisella alueella. Osia löytyy useimpiin
+          merkkeihin vuosimalleille 1999–2025: Toyota, Volkswagen, Volvo, Mercedes-Benz, BMW, Audi, Skoda, Ford,
+          Nissan, Opel, Kia, Hyundai, Peugeot, Renault ja monet muut.
+        </p>
+      </div>
+      <div class="services">
+        {
+          parts.map((p) => (
+            <article class="service reveal">
+              <span class="service__icon"><Icon name={p.icon} size={24} /></span>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container grid-2">
+      <article class="service reveal">
+        <span class="service__icon"><Icon name="box" size={24} /></span>
+        <h3>Uudet varaosat</h3>
+        <p>
+          Kun käytetty osa ei ole oikea ratkaisu, hankimme uudet varaosat ja huoltotarvikkeet. Kysy hintaa
+          varaosakyselyllä tai soittamalla.
+        </p>
+      </article>
+      <article class="service reveal">
+        <span class="service__icon"><Icon name="windshield" size={24} /></span>
+        <h3>Autover-tuulilasit</h3>
+        <p>Tuulilasit sekä asennukseen tarvittavat liimat ja listat.</p>
+      </article>
+      <article class="service reveal" id="huollot">
+        <span class="service__icon"><Icon name="wrench" size={24} /></span>
+        <h3>Huollot</h3>
+        <p>Huollamme autoja vuosikymmenten kokemuksella. Kysy vapaita aikoja puhelimitse.</p>
+      </article>
+      <article class="service reveal">
+        <span class="service__icon"><Icon name="recycle" size={24} /></span>
+        <h3>Autojen osto purkuun ja romutus</h3>
+        <p>
+          Ostamme henkilö- ja pakettiautoja purkuun. Romutustodistukset saat heti paikan päältä.
+        </p>
+      </article>
+      <article class="service reveal">
+        <span class="service__icon"><Icon name="truck" size={24} /></span>
+        <h3>Kuljetus ja lähetykset</h3>
+        <p>
+          Kuljetamme osia lähialueen korjaamoille ja lähetämme rahtina tai Postin ja Matkahuollon kautta koko Suomeen.
+        </p>
+      </article>
+      <article class="service reveal">
+        <span class="service__icon"><Icon name="shield" size={24} /></span>
+        <h3>Toimintatakuu</h3>
+        <p>Annamme moottoreille ja vaihdelaatikoille toimintatakuun.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Tulossa tiloihimme</p>
+        <h2>Uusia palveluita</h2>
+      </div>
+      <div class="grid-2">
+        <article class="service service--soon reveal">
+          <span class="tag">Tulossa</span>
+          <h3>Sisäpuhdistukset</h3>
+          <p>Auton sisätilojen perusteellinen puhdistus.</p>
+        </article>
+        <article class="service service--soon reveal">
+          <span class="tag">Tulossa</span>
+          <h3>Auton ilmastoinnin korjaus</h3>
+          <p>Ilmastointilaitteiden huolto ja korjaus.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

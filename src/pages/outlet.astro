@@ -1,0 +1,81 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+import { outletItems, upcomingCategories } from '../data/outlet';
+
+const discount = (oldPrice: number, price: number) => Math.round((1 - price / oldPrice) * 100);
+---
+
+<Base
+  title="Outlet – varaosat ja moottorit alennuksella"
+  description="Poistossa olevat moottorit ja varaosat huomattavalla alennuksella. Moottoreissa toimintatakuu. Nastolan autopalvelu Tapsa."
+>
+  <PageHero
+    eyebrow="Outlet"
+    title="Poistossa olevat varaosat"
+    lead="Teemme tilaa uusille osille ja myymme osan laadukkaista varaosista ja moottoreista huomattavalla alennuksella. Tuotteet myydään ensimmäiselle – yleensä pikavauhtia."
+    image="/images/moottorit.jpg"
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Moottorit</p>
+        <h2>Tämän hetken tarjoukset</h2>
+      </div>
+
+      <div class="product-grid">
+        {
+          outletItems.map((item) => (
+            <article class="product reveal">
+              {item.oldPrice && <span class="product__ribbon">-{discount(item.oldPrice, item.price)} %</span>}
+              <span class="tag">{item.category}</span>
+              <h3>{item.title}</h3>
+              <dl>
+                {item.code && (<><dt>Moottorikoodi</dt><dd>{item.code}</dd></>)}
+                <dt>Vuosimalli</dt>
+                <dd>{item.year ?? 'Kysy lisää'}</dd>
+                <dt>Kilometrit</dt>
+                <dd>{item.km ?? 'Kysy lisää'}</dd>
+              </dl>
+              <div class="price">
+                <strong>{item.price} €</strong>
+                {item.oldPrice && <s>{item.oldPrice} €</s>}
+              </div>
+              <a class="btn btn--primary" href={site.phone.href}><Icon name="phone" size={18} /> Varaa: {site.phone.display}</a>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="note" style="margin-top:1.5rem">
+        Moottoreissa toimintatakuu. Hinnat sisältävät marginaaliveron.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow">Tulossa</p>
+        <h2>Lisää tarjouksia pian</h2>
+      </div>
+      <div class="services">
+        {
+          upcomingCategories.map((c) => (
+            <article class="service service--soon reveal">
+              <span class="tag">Tulossa</span>
+              <h3>{c}</h3>
+              <p>Kysy jo nyt – osa tuotteista on myynnissä ennen kuin ne ehtivät sivuille.</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Kiinnostuitko?" text="Soita tai lähetä viesti – tarjoustuotteet myydään saapumisjärjestyksessä." />
+</Base>

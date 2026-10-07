@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+---
+
+<Base
+  title="Yhteystiedot"
+  description="Nastolan autopalvelu Tapsa Oy, Tervatie 5, 15560 Nastola. Puh. 044 771 1154, info@autopalvelutapsa.fi. Avoinna ma–pe 10–17."
+>
+  <PageHero
+    eyebrow="Yhteystiedot"
+    title="Ota yhteyttä"
+    lead={`Palvelemme puhelimitse ja paikan päällä ${site.hours[0].days.toLowerCase()} ${site.hours[0].time}.`}
+  />
+
+  <section class="section">
+    <div class="container contact-grid">
+      <div class="stack">
+        <div class="contact-card reveal">
+          <h2 style="font-size:2rem">{site.name}</h2>
+          <ul class="contact-list">
+            <li>
+              <span class="contact-list__icon"><Icon name="pin" /></span>
+              <div><small>Osoite</small><a href={site.mapsLink} target="_blank" rel="noopener">{site.address.street}<br />{site.address.postalCode} {site.address.city}</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="phone" /></span>
+              <div><small>Myymälä</small><a href={site.phone.href}>{site.phone.display}</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="phone" /></span>
+              <div><small>Lankapuhelin</small><a href={site.landline.href}>{site.landline.display}</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="whatsapp" /></span>
+              <div><small>WhatsApp</small><a href={site.whatsapp} target="_blank" rel="noopener">{site.phone.display}</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="mail" /></span>
+              <div><small>Sähköposti</small><a href={`mailto:${site.email}`}>{site.email}</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="car" /></span>
+              <div><small>Automyynti</small><a href={site.salesPhone.href}>{site.salesPhone.display}</a> · <a href={`mailto:${site.salesEmail}`}>{site.salesEmail}</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="facebook" /></span>
+              <div><small>Facebook</small><a href={site.facebook} target="_blank" rel="noopener">Autopalvelu Tapsa</a></div>
+            </li>
+          </ul>
+        </div>
+        <div class="contact-card reveal">
+          <h3>Aukioloajat</h3>
+          <table class="hours">
+            <tbody>
+              {site.hours.map((h) => <tr><td>{h.days}</td><td>{h.time}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="map reveal">
+        <iframe src={site.mapsEmbed} title="Kartta: Tervatie 5, Nastola" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
+</Base>

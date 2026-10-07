@@ -1,0 +1,219 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+
+const services = [
+  { icon: 'engine', title: 'Purkuautojen varaosat', text: 'Laaja valikoima käytettyjä osia: moottorit, vaihdelaatikot, laturit, startit, pelti- ja muoviosat.' },
+  { icon: 'box', title: 'Uudet varaosat', text: 'Hankimme myös uudet varaosat ja huoltotarvikkeet edullisesti.' },
+  { icon: 'windshield', title: 'Autover-tuulilasit', text: 'Tuulilasit sekä niiden asennukseen tarvittavat liimat ja listat.' },
+  { icon: 'car', title: 'Peltiosat', text: 'Ovet, konepellit, lokasuojat, takaluukut ja muut korin osat.' },
+  { icon: 'fan', title: 'Lämmityslaitteiden moottorit', text: 'Puhaltimen moottorit ja lämmityslaitteiden osat useimpiin malleihin.' },
+  { icon: 'light', title: 'Valot ja peilit', text: 'Ajovalot, takavalot, vilkut ja sivupeilit varastosta.' },
+  { icon: 'recycle', title: 'Ostamme autoja purkuun', text: 'Ostamme henkilö- ja pakettiautoja purkuun. Romutustodistus heti paikan päältä.' },
+  { icon: 'truck', title: 'Osien kuljetus', text: 'Kuljetamme osia lähialueen korjaamoille sekä lähetämme Postin ja Matkahuollon kautta.' },
+] as const;
+---
+
+<Base
+  title={site.name}
+  description="Autopurkaamo Nastolassa, Lahden vieressä. Käytetyt ja uudet varaosat, moottorit ja vaihdelaatikot takuulla, huollot ja romutustodistukset. Perheyritys vuodesta 1981."
+>
+  <section class="hero">
+    <img class="hero__bg" src="/images/moottorit.jpg" alt="" fetchpriority="high" />
+    <div class="container hero__inner">
+      <div>
+        <p class="eyebrow">Autopurkaamo · Nastola, Lahti</p>
+        <h1>Oikeat purkuosat <span>oikeaan kohteeseen</span></h1>
+        <p class="hero__lead">
+          Käytetyt ja uudet auton varaosat, moottorit ja vaihdelaatikot toimintatakuulla. Luotettava perheyritys
+          palveluksessasi vuodesta {site.founded}.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--accent btn--lg" href="/varaosakysely/"><Icon name="doc" size={20} /> Kysy varaosaa</a>
+          <a class="btn btn--ghost btn--lg" href={site.phone.href}><Icon name="phone" size={20} /> {site.phone.display}</a>
+        </div>
+        <ul class="hero__badges">
+          <li><Icon name="shield" size={18} /> Toimintatakuu moottoreille ja vaihdelaatikoille</li>
+          <li><Icon name="doc" size={18} /> Romutustodistus heti</li>
+          <li><Icon name="truck" size={18} /> Toimitus koko Suomeen</li>
+        </ul>
+      </div>
+
+      <aside class="hero-card" aria-label="Yhteystiedot">
+        <div class="since"><div><small>Vuodesta</small><strong>{site.founded}</strong></div></div>
+        <h2>Palvelemme</h2>
+        <dl>
+          <div>
+            <dt>Aukiolo</dt>
+            <dd>{site.hours[0].days} {site.hours[0].time}</dd>
+          </div>
+          <div>
+            <dt>Myymälä</dt>
+            <dd><a href={site.phone.href}>{site.phone.display}</a></dd>
+          </div>
+          <div>
+            <dt>Osoite</dt>
+            <dd><a href={site.mapsLink} target="_blank" rel="noopener">{site.address.street}, {site.address.postalCode} {site.address.city}</a></dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="pillars">
+      <a class="pillar" href="/palvelut/">
+        <span class="pillar__icon"><Icon name="engine" size={26} /></span>
+        <h3>Autopurkaamo</h3>
+        <p>Moottorit, peltiosat, muoviosat, laturit, startit ja vaihdelaatikot. Romutustodistukset paikan päältä heti.</p>
+        <span class="pillar__more">Katso palvelut <Icon name="arrow" size={18} /></span>
+      </a>
+      <a class="pillar" href="/varaosakysely/">
+        <span class="pillar__icon"><Icon name="box" size={26} /></span>
+        <h3>Uudet varaosat</h3>
+        <p>Tarvitsetko uuden osan? Kerro auton tiedot, niin selvitämme hinnan ja saatavuuden.</p>
+        <span class="pillar__more">Tee kysely <Icon name="arrow" size={18} /></span>
+      </a>
+      <a class="pillar" href="/palvelut/#huollot">
+        <span class="pillar__icon"><Icon name="wrench" size={26} /></span>
+        <h3>Huollot</h3>
+        <p>Ammattitaitoiset huollot vuosikymmenten kokemuksella ajoneuvojen tekniikasta.</p>
+        <span class="pillar__more">Lue lisää <Icon name="arrow" size={18} /></span>
+      </a>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section__head section__head--center reveal">
+        <p class="eyebrow">Palveluitamme</p>
+        <h2>Kaikki autoosi saman katon alta</h2>
+        <p class="lead" style="margin-inline:auto">
+          Varastossamme on kymmeniätuhansia osia useimpiin henkilö- ja pakettiautoihin.
+        </p>
+      </div>
+      <div class="services">
+        {
+          services.map((s) => (
+            <article class="service reveal">
+              <span class="service__icon"><Icon name={s.icon} size={24} /></span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container split">
+      <div class="split__media reveal">
+        <img src="/images/vetoakselit.jpg" alt="Hyllyllinen merkittyjä vetoakseleita varastossa" loading="lazy" width="900" height="1195" />
+        <div class="split__stat">
+          <strong>{new Date().getFullYear() - site.founded}+</strong>
+          <span>vuotta kokemusta</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <p class="eyebrow">Perheyritys palveluksessanne</p>
+        <h2>Vuosikymmenten kokemus varaosista</h2>
+        <p class="lead">
+          Ammattitaitoisella henkilökunnallamme on vuosikymmenten kokemus ajoneuvojen tekniikasta ja varaosista.
+        </p>
+        <ul class="checklist">
+          <li><Icon name="check" size={20} /> Varaosien purku suoritetaan huolellisesti ympäristöluvallisella alueella.</li>
+          <li><Icon name="check" size={20} /> Moottoreille ja vaihdelaatikoille annetaan toimintatakuu.</li>
+          <li><Icon name="check" size={20} /> Toimitamme osat rahtina tai Postin ja Matkahuollon kautta.</li>
+          <li><Icon name="check" size={20} /> Voit myös noutaa osat Nastolan myymälästä: {site.address.street}.</li>
+        </ul>
+        <a class="btn btn--primary btn--lg" href="/yhteystiedot/">Ota yhteyttä <Icon name="arrow" size={20} /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--navy">
+    <div class="container stats">
+      <div class="reveal"><strong>{site.founded}</strong><span>perustettu</span></div>
+      <div class="reveal"><strong>10 000+</strong><span>osaa varastossa</span></div>
+      <div class="reveal"><strong>Takuu</strong><span>moottoreille ja vaihteistoille</span></div>
+      <div class="reveal"><strong>Sama päivä</strong><span>vastaus kyselyihin yleensä</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <div class="reveal">
+        <p class="eyebrow">Moottorit varastosta</p>
+        <h2>Moottorit suoraan varastosta</h2>
+        <p class="lead">
+          Moottoreita ja vaihdelaatikoita useimpiin merkkeihin vuosimalleille 1999–2025 – kaikki toimintatakuulla.
+        </p>
+        <p>
+          Tarkista myös <a href="/outlet/">outlet-osastomme</a>, josta löydät laadukkaita moottoreita ja varaosia
+          huomattavalla alennuksella.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="/outlet/">Outlet-tarjoukset <Icon name="arrow" size={18} /></a>
+          <a class="btn btn--outline" href="/purettavat-ajoneuvot/">Purettavat autot</a>
+        </div>
+      </div>
+      <div class="split__media reveal">
+        <img src="/images/moottorit.jpg" alt="Rivi purettuja moottoreita varastohallissa" loading="lazy" width="462" height="614" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container">
+      <div class="delivery reveal">
+        <div>
+          <p class="eyebrow">Toimitus koko Suomeen</p>
+          <h2>Osat perille nopeasti</h2>
+          <p>
+            Lähetämme varaosat Postin ja Matkahuollon kautta tai rahtina. Lähialueen korjaamoille kuljetamme osat
+            myös itse.
+          </p>
+        </div>
+        <div class="delivery__logos">
+          <img src="/images/posti.png" alt="Posti" width="122" height="56" loading="lazy" />
+          <img src="/images/matkahuolto.png" alt="Matkahuolto" width="91" height="56" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+
+  <section class="section">
+    <div class="container contact-grid">
+      <div class="contact-card reveal">
+        <p class="eyebrow">Tervetuloa</p>
+        <h2>Löydät meidät Nastolasta</h2>
+        <ul class="contact-list">
+          <li>
+            <span class="contact-list__icon"><Icon name="pin" /></span>
+            <div><small>Osoite</small><a href={site.mapsLink} target="_blank" rel="noopener">{site.address.street}, {site.address.postalCode} {site.address.city}</a></div>
+          </li>
+          <li>
+            <span class="contact-list__icon"><Icon name="phone" /></span>
+            <div><small>Myymälä</small><a href={site.phone.href}>{site.phone.display}</a></div>
+          </li>
+          <li>
+            <span class="contact-list__icon"><Icon name="mail" /></span>
+            <div><small>Sähköposti</small><a href={`mailto:${site.email}`}>{site.email}</a></div>
+          </li>
+          <li>
+            <span class="contact-list__icon"><Icon name="clock" /></span>
+            <div><small>Aukiolo</small><strong>{site.hours[0].days} {site.hours[0].time}</strong></div>
+          </li>
+        </ul>
+      </div>
+      <div class="map reveal">
+        <iframe src={site.mapsEmbed} title="Kartta: Tervatie 5, Nastola" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
+</Base>

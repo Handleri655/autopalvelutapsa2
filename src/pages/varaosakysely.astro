@@ -1,0 +1,175 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+---
+
+<Base
+  title="Varaosakysely"
+  description="Lähetä varaosakysely – varastossamme on kymmeniätuhansia käytettyjä ja uusia auton varaosia. Vastaamme yleensä saman päivän aikana."
+>
+  <PageHero
+    eyebrow="Varaosakysely"
+    title="Löytyykö meiltä oikea osa?"
+    lead="Varastossamme on kymmeniätuhansia osia. Kysymällä se selviää – vastaamme kyselyysi yleensä saman päivän aikana."
+  />
+
+  <section class="section">
+    <div class="container form-layout">
+      <div class="contact-card reveal">
+        <form class="form" data-parts-form data-endpoint={site.formEndpoint} data-email={site.email} novalidate>
+          <fieldset>
+            <legend>Ajoneuvo</legend>
+            <div class="form-row">
+              <div class="field">
+                <label for="rekisteri">Rekisterinumero</label>
+                <input id="rekisteri" name="Rekisterinumero" autocomplete="off" placeholder="ABC-123" style="text-transform:uppercase" />
+              </div>
+              <div class="field">
+                <label for="merkki">Merkki ja malli <span>*</span></label>
+                <input id="merkki" name="Merkki ja malli" required placeholder="esim. Skoda Octavia" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="vuosi">Vuosimalli</label>
+                <input id="vuosi" name="Vuosimalli" inputmode="numeric" placeholder="esim. 2012" />
+              </div>
+              <div class="field">
+                <label for="moottori">Moottori / moottorikoodi</label>
+                <input id="moottori" name="Moottori" placeholder="esim. 1.9 TDI, ASZ" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Haettava osa</legend>
+            <div class="form-row">
+              <div class="field">
+                <label for="tyyppi">Osan tyyppi</label>
+                <select id="tyyppi" name="Osan tyyppi">
+                  <option>Käytetty osa</option>
+                  <option>Uusi osa</option>
+                  <option>Kumpi tahansa</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="toimitus">Toimitustapa</label>
+                <select id="toimitus" name="Toimitustapa">
+                  <option>Nouto Nastolasta</option>
+                  <option>Posti</option>
+                  <option>Matkahuolto</option>
+                  <option>Rahti / kuljetus</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="osa">Mitä osaa etsit? <span>*</span></label>
+              <textarea id="osa" name="Haettava osa" required placeholder="esim. vasen etuovi, väri hopea – tai moottori kokonaisena"></textarea>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Yhteystietosi</legend>
+            <div class="field">
+              <label for="nimi">Nimi <span>*</span></label>
+              <input id="nimi" name="Nimi" required autocomplete="name" />
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="puhelin">Puhelin <span>*</span></label>
+                <input id="puhelin" name="Puhelin" type="tel" required autocomplete="tel" />
+              </div>
+              <div class="field">
+                <label for="email">Sähköposti</label>
+                <input id="email" name="Sähköposti" type="email" autocomplete="email" />
+              </div>
+            </div>
+          </fieldset>
+
+          <p class="form__status" role="status" hidden data-status></p>
+
+          <div>
+            <button class="btn btn--accent btn--lg" type="submit"><Icon name="arrow" size={20} /> Lähetä kysely</button>
+          </div>
+        </form>
+      </div>
+
+      <aside class="stack">
+        <div class="contact-card reveal">
+          <h3>Nopeammin puhelimitse</h3>
+          <p>Soita tai lähetä viesti – kerromme heti, löytyykö osa varastosta.</p>
+          <ul class="contact-list">
+            <li>
+              <span class="contact-list__icon"><Icon name="phone" /></span>
+              <div><small>Myymälä</small><a href={site.phone.href}>{site.phone.display}</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="whatsapp" /></span>
+              <div><small>WhatsApp</small><a href={site.whatsapp} target="_blank" rel="noopener">Lähetä viesti</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="mail" /></span>
+              <div><small>Sähköposti</small><a href={`mailto:${site.email}`}>{site.email}</a></div>
+            </li>
+            <li>
+              <span class="contact-list__icon"><Icon name="clock" /></span>
+              <div><small>Aukiolo</small><strong>{site.hours[0].days} {site.hours[0].time}</strong></div>
+            </li>
+          </ul>
+        </div>
+        <div class="contact-card reveal">
+          <h3>Vinkki</h3>
+          <p style="margin:0">
+            Rekisterinumero ja moottorikoodi auttavat löytämään juuri oikean osan nopeasti.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-parts-form]');
+  const status = form?.querySelector<HTMLElement>('[data-status]');
+
+  const showStatus = (text: string, ok = true) => {
+    if (!status) return;
+    status.textContent = text;
+    status.style.background = ok ? '' : '#fdecea';
+    status.style.color = ok ? '' : '#a12a1e';
+    status.hidden = false;
+  };
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const data = new FormData(form);
+    const endpoint = form.dataset.endpoint;
+
+    if (endpoint) {
+      try {
+        const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        showStatus('Kiitos! Kysely on lähetetty – vastaamme yleensä saman päivän aikana.');
+      } catch {
+        showStatus('Lähetys epäonnistui. Soita meille tai lähetä sähköpostia.', false);
+      }
+      return;
+    }
+
+    const lines = [...data.entries()]
+      .filter(([, v]) => String(v).trim() !== '')
+      .map(([k, v]) => `${k}: ${v}`);
+    const subject = `Varaosakysely: ${data.get('Merkki ja malli') ?? ''}`;
+    window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+    showStatus('Sähköpostiohjelmasi avautui valmiiksi täytetyllä viestillä – lähetä viesti sieltä.');
+  });
+</script>

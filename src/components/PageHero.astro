@@ -1,0 +1,14 @@
+---
+type Props = { eyebrow?: string; title: string; lead?: string; image?: string };
+
+const { eyebrow, title, lead, image = '/images/vetoakselit.jpg' } = Astro.props;
+---
+
+<section class="page-hero" style={`--hero-image: url('${image}')`}>
+  <div class="container page-hero__inner">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1>{title}</h1>
+    {lead && <p class="page-hero__lead">{lead}</p>}
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+import { vehicles } from '../data/vehicles';
+---
+
+<Base
+  title="Purettavat autot"
+  description="Purussa olevat ja purkuun tulevat ajoneuvot Nastolassa. Tiedustele osia puhelimitse, WhatsAppilla tai varaosakyselyllä."
+  image="/images/purkuauto.jpg"
+>
+  <PageHero
+    eyebrow="Purettavat autot"
+    title="Purussa olevat ajoneuvot"
+    lead="Purussa olevat tai purkuun tulevat ajoneuvot. Osatiedustelut puhelimitse, WhatsAppilla tai varaosakyselylomakkeella."
+    image="/images/purkuauto.jpg"
+  >
+    <div class="hero__actions" style="margin-top:1.5rem">
+      <a class="btn btn--accent" href="/varaosakysely/"><Icon name="doc" size={18} /> Varaosakysely</a>
+      <a class="btn btn--ghost" href={site.whatsapp} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> WhatsApp</a>
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      {
+        vehicles.length > 0 ? (
+          <div class="product-grid">
+            {vehicles.map((v) => (
+              <article class="product reveal">
+                {v.image && <img src={v.image} alt={`${v.make} ${v.model}`} loading="lazy" style="border-radius:8px;margin-bottom:1rem;aspect-ratio:4/3;object-fit:cover" />}
+                <span class="tag">{v.status}</span>
+                <h3>{v.make} {v.model}</h3>
+                <dl>
+                  {v.year && (<><dt>Vuosimalli</dt><dd>{v.year}</dd></>)}
+                  {v.engine && (<><dt>Moottori</dt><dd>{v.engine}</dd></>)}
+                  {v.gearbox && (<><dt>Vaihteisto</dt><dd>{v.gearbox}</dd></>)}
+                </dl>
+                <a class="btn btn--primary" href="/varaosakysely/">Kysy osia</a>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="empty-state reveal">
+            <h2>Lista päivittyy jatkuvasti</h2>
+            <p>
+              Purkuautot vaihtuvat nopeasti. Kerro mitä osaa etsit ja mihin autoon, niin tarkistamme tilanteen
+              varastosta ja purkuun tulevista autoista.
+            </p>
+            <div class="hero__actions" style="justify-content:center">
+              <a class="btn btn--primary" href="/varaosakysely/">Lähetä varaosakysely</a>
+              <a class="btn btn--outline" href={site.phone.href}><Icon name="phone" size={18} /> {site.phone.display}</a>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <CtaBand title="Onko sinulla auto purkuun?" text="Ostamme henkilö- ja pakettiautoja purkuun. Romutustodistus heti paikan päältä." />
+</Base>

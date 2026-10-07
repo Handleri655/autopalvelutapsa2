@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+---
+
+<Base
+  title="Myytävät autot"
+  description="Käytettyjen käyttö- ja hyötyajoneuvojen myynti Nastolassa. Myymme, ostamme ja vaihdamme autoja – myös osamaksulla, jopa ilman käsirahaa."
+  image="/images/purkuauto.jpg"
+>
+  <PageHero
+    eyebrow="Automyynti"
+    title="Myynnissä olevat autot"
+    lead="Tiloissamme toimii käytettyjen käyttö- ja hyötyajoneuvojen myyntipiste. Luotettavaa ja helppoa autokauppaa vuosikymmenten kokemuksella."
+    image="/images/purkuauto.jpg"
+  />
+
+  <section class="section">
+    <div class="container split">
+      <div class="reveal">
+        <p class="eyebrow">Myy, osta, vaihda</p>
+        <h2>Autokauppa helposti</h2>
+        <ul class="checklist">
+          <li><Icon name="check" size={20} /> Myymme, ostamme ja vaihdamme ajoneuvoja.</li>
+          <li><Icon name="check" size={20} /> Rahoitus myös osamaksulla – jopa ilman käsirahaa.</li>
+          <li><Icon name="check" size={20} /> Käyttö- ja hyötyajoneuvot.</li>
+        </ul>
+        <p>Tutustu valikoimaan paikan päällä tai kysy saatavilla olevista autoista:</p>
+      </div>
+      <div class="contact-card reveal">
+        <h3>Automyynti</h3>
+        <ul class="contact-list">
+          <li>
+            <span class="contact-list__icon"><Icon name="phone" /></span>
+            <div><small>Puhelin</small><a href={site.salesPhone.href}>{site.salesPhone.display}</a></div>
+          </li>
+          <li>
+            <span class="contact-list__icon"><Icon name="mail" /></span>
+            <div><small>Sähköposti</small><a href={`mailto:${site.salesEmail}`}>{site.salesEmail}</a></div>
+          </li>
+          <li>
+            <span class="contact-list__icon"><Icon name="pin" /></span>
+            <div><small>Osoite</small><a href={site.mapsLink} target="_blank" rel="noopener">{site.address.street}, {site.address.postalCode} {site.address.city}</a></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
